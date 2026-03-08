@@ -1,0 +1,9 @@
+# Transcripción: corre en Linux y Windows
+faster-whisper>=1.0.0
+numpy
+sounddevice
+soundfile
+
+# Solo Windows: captura de audio del sistema (WASAPI loopback)
+# En Linux no instalar; en Windows: pip install PyAudioWPatch
+PyAudioWPatch; sys_platform == "win32"
