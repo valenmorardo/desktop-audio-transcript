@@ -1,7 +1,5 @@
 """
-Captura de audio del sistema (lo que suena en la PC).
-Windows: WASAPI loopback (PyAudioWPatch).
-Linux: monitor de PulseAudio/PipeWire (sounddevice).
+Captura de audio del sistema en Windows (WASAPI loopback, PyAudioWPatch).
 """
 import sys
 import threading
@@ -15,12 +13,10 @@ SAMPLE_WIDTH = 2  # 16 bit
 
 
 def _get_platform_recorder():
-    if sys.platform == "win32":
-        from _capture_windows import WindowsLoopbackRecorder
-        return WindowsLoopbackRecorder()
-    else:
-        from _capture_linux import LinuxMonitorRecorder
-        return LinuxMonitorRecorder()
+    if sys.platform != "win32":
+        raise RuntimeError("Esta app está configurada solo para Windows.")
+    from _capture_windows import WindowsLoopbackRecorder
+    return WindowsLoopbackRecorder()
 
 
 class SystemAudioRecorder:
@@ -36,6 +32,7 @@ class SystemAudioRecorder:
         self._channels = CHANNELS
         self._recording = False
         self._thread = None
+        self._record_error = None  # excepción del hilo de grabación
 
     def start(self):
         """Empieza a grabar."""
@@ -44,6 +41,7 @@ class SystemAudioRecorder:
         self._frames = []
         self._sample_rate = SAMPLE_RATE
         self._channels = CHANNELS
+        self._record_error = None
         self._recording = True
         self._thread = threading.Thread(target=self._record_loop, daemon=True)
         self._thread.start()
@@ -63,12 +61,21 @@ class SystemAudioRecorder:
             self._channels = channels
 
     def _record_loop(self):
-        self._impl.record_loop(
-            sample_rate=SAMPLE_RATE,
-            channels=CHANNELS,
-            frames_callback=self._on_frames,
-            is_stopping=lambda: not self._recording,
-        )
+        try:
+            self._impl.record_loop(
+                sample_rate=SAMPLE_RATE,
+                channels=CHANNELS,
+                frames_callback=self._on_frames,
+                is_stopping=lambda: not self._recording,
+            )
+        except Exception as e:
+            self._record_error = e
+
+    def get_last_error(self):
+        """Devuelve el mensaje de error de la última grabación, o None."""
+        if self._record_error is None:
+            return None
+        return str(self._record_error)
 
     def get_wav_path(self) -> Path | None:
         """Guarda la grabación en un WAV temporal y devuelve la ruta. None si no hay datos."""

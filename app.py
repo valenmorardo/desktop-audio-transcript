@@ -75,11 +75,18 @@ def main():
         nonlocal wav_path_after_stop
         recorder.stop()
         wav_path_after_stop = recorder.get_wav_path()
-        status_text.set(
-            "Grabación detenida. Clic en «Transcribir» para generar el texto."
-            if wav_path_after_stop
-            else "Grabación detenida. No se capturó audio (comprobá el dispositivo de captura)."
-        )
+        err = recorder.get_last_error()
+        if wav_path_after_stop:
+            status_text.set("Grabación detenida. Clic en «Transcribir» para generar el texto.")
+        else:
+            msg = "Grabación detenida. No se capturó audio."
+            if err:
+                msg += " " + err
+            else:
+                msg += " Comprobá el dispositivo de captura (en Linux hace falta un dispositivo «Monitor»)."
+            status_text.set(msg)
+            if err:
+                messagebox.showwarning("Sin audio", msg + "\n\nVer README o GUIA_PASO_A_PASO.md → «Si no se captura audio».")
         btn_start.config(state=tk.NORMAL)
         btn_stop.config(state=tk.DISABLED)
         if wav_path_after_stop:

@@ -1,200 +1,83 @@
-# Guía paso a paso — Instalación y prueba
+# Guía paso a paso — Windows
 
-Esta guía explica cómo clonar el repositorio, instalar dependencias y probar la app en **Linux** y en **Windows**.
-
----
-
-## Requisitos previos (ambos sistemas)
-
-- **Python 3.10 o 3.11** instalado y en el PATH.
-- **ffmpeg** instalado y en el PATH (lo usa faster-whisper).
-- **Git** (para clonar el repo).
+Esta guía es para usar la app **solo en Windows**. Flujo: clonar → ejecutar un script → listo.
 
 ---
 
-# Linux
+## Requisitos previos
 
-## 1. Clonar el repositorio
+- **Python 3.10 o 3.11** instalado y en el PATH.  
+  Descarga: [python.org/downloads](https://www.python.org/downloads/). Al instalar, marcá **"Add Python to PATH"**.
+- **ffmpeg** en el PATH (lo usa faster-whisper).  
+  Descarga: [ffmpeg.org/download.html](https://ffmpeg.org/download.html), o con Chocolatey: `choco install ffmpeg`.
 
-Abrí una terminal y elegí la carpeta donde querés el proyecto. Luego:
+### Cómo verificar
 
-```bash
+En **cmd** o **PowerShell**:
+
+| Qué     | Comando              | Si está bien                    |
+|--------|----------------------|----------------------------------|
+| Python | `python --version`   | Ej. `Python 3.10.x` o `3.11.x`   |
+| ffmpeg | `ffmpeg -version`    | Muestra la versión              |
+
+Si no está, el script `iniciar.bat` te avisará al intentar abrir la app.
+
+---
+
+## Uso en 3 pasos
+
+### 1. Clonar el repositorio
+
+En **cmd** o **PowerShell**:
+
+```cmd
 git clone https://github.com/valenmorardo/desktop-audio-transcript.git
 cd desktop-audio-transcript
 ```
 
-*(Reemplazá `valenmorardo` por tu usuario de GitHub; si el repo tiene otro nombre o URL, usá esa.)*
+(O descargá el ZIP del repo y descomprimilo; después entrá a la carpeta.)
 
-## 2. Crear el entorno virtual
+### 2. Ejecutar el script
 
-```bash
-python3 -m venv venv
+Doble clic en **`iniciar.bat`**  
+**o** desde cmd en esa carpeta:
+
+```cmd
+iniciar.bat
 ```
 
-## 3. Activar el entorno virtual
+El script:
 
-```bash
-source venv/bin/activate
-```
+- Crea el entorno virtual (`venv`) si no existe.
+- Instala o actualiza las dependencias (`pip install -r requirements.txt`).
+- Abre la app.
 
-Verás algo como `(venv)` al inicio de la línea. A partir de acá los comandos `pip` y `python` usan ese entorno.
+La primera vez puede tardar un poco (descarga de paquetes y, al transcribir, el modelo de IA). Las siguientes veces solo abre la app.
 
-## 4. Instalar dependencias
-
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-En Linux se instalan, entre otras: `faster-whisper`, `sounddevice`, `soundfile`, `numpy`. **No** se instala PyAudioWPatch (solo se usa en Windows).
-
-## 5. (Opcional) Verificar ffmpeg
-
-```bash
-ffmpeg -version
-```
-
-Si no está instalado, en Ubuntu/Debian: `sudo apt install ffmpeg`. En Fedora: `sudo dnf install ffmpeg`.
-
-## 6. Ejecutar la aplicación
-
-```bash
-python app.py
-```
-
-Debería abrirse la ventana de la app.
-
-## 7. Probar el flujo
+### 3. Usar la app
 
 1. Clic en **Empezar a escuchar** (empieza a grabar el audio del sistema).
-2. Reproducí algo (YouTube, Zoom, música) unos segundos.
+2. Reproducí la clase (Zoom, Meet, etc.) o cualquier audio.
 3. Clic en **Dejar de escuchar**.
-4. Clic en **Transcribir** (la primera vez descargará el modelo "base", ~150 MB).
-5. Revisá el texto en el cuadro y, si querés, usá **Guardar transcript en archivo**.
-
-## 8. Si no se captura audio (Linux)
-
-Listá los dispositivos de audio:
-
-```bash
-python -c "import sounddevice; print(sounddevice.query_devices())"
-```
-
-Tiene que aparecer algún dispositivo con **"Monitor"** en el nombre (salida del sistema). Si no hay, revisá la sección "Si no se captura audio" del [README](README.md).
+4. Clic en **Transcribir** (la primera vez descargará el modelo "base").
+5. Revisá el texto y usá **Guardar transcript en archivo** si querés.
 
 ---
 
-# Windows
+## Resumen
 
-## 1. Clonar el repositorio
+| Paso   | Acción |
+|--------|--------|
+| 1      | Clonar (o descargar) el repo y entrar a la carpeta. |
+| 2      | Ejecutar `iniciar.bat`. |
+| 3      | Usar la app: Empezar a escuchar → Dejar de escuchar → Transcribir. |
 
-Abrí **PowerShell** o **Símbolo del sistema** (cmd) y andá a la carpeta donde querés el proyecto:
-
-```cmd
-git clone https://github.com/valenmorardo/desktop-audio-transcript.git
-cd desktop-audio-transcript
-```
-
-*(Reemplazá `valenmorardo` por tu usuario de GitHub.)*
-
-## 2. Crear el entorno virtual
-
-```cmd
-python -m venv venv
-```
-
-Si `python` no se reconoce, probá `py -m venv venv` o agregá Python al PATH.
-
-## 3. Activar el entorno virtual
-
-En **PowerShell**:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-En **cmd**:
-
-```cmd
-venv\Scripts\activate.bat
-```
-
-Verás `(venv)` al inicio de la línea.
-
-## 4. Instalar dependencias
-
-```cmd
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-En Windows, además del resto, se instala **PyAudioWPatch** (captura del audio del sistema vía WASAPI loopback).
-
-## 5. (Opcional) Verificar ffmpeg
-
-```cmd
-ffmpeg -version
-```
-
-Si no está instalado, descargalo desde [ffmpeg.org](https://ffmpeg.org/download.html) y agregalo al PATH, o usá un gestor como Chocolatey: `choco install ffmpeg`.
-
-## 6. Ejecutar la aplicación
-
-```cmd
-python app.py
-```
-
-Debería abrirse la ventana de la app.
-
-## 7. Probar el flujo
-
-1. Clic en **Empezar a escuchar**.
-2. Reproducí algo (Zoom, Meet, YouTube, etc.) unos segundos.
-3. Clic en **Dejar de escuchar**.
-4. Clic en **Transcribir** (la primera vez se descargará el modelo "base").
-5. Revisá el transcript y usá **Guardar transcript en archivo** si querés.
-
-## 8. Si no se captura audio (Windows)
-
-Para ver los dispositivos WASAPI/loopback:
-
-```cmd
-python -m pyaudiowpatch
-```
-
-Revisá la sección "Si no se captura audio" del [README](README.md) si algo falla.
+No hace falta activar el venv a mano ni revisar dependencias una por una: el script se encarga.
 
 ---
 
-# Resumen rápido (después de clonar)
+## Si algo falla
 
-| Paso | Linux | Windows |
-|------|--------|---------|
-| Entorno virtual | `python3 -m venv venv` | `python -m venv venv` |
-| Activar | `source venv/bin/activate` | `.\venv\Scripts\Activate.ps1` o `venv\Scripts\activate.bat` |
-| Dependencias | `pip install -r requirements.txt` | `pip install -r requirements.txt` |
-| Ejecutar | `python app.py` | `python app.py` |
-
----
-
-# Volver a probar más adelante (repo ya clonado)
-
-```bash
-# Linux
-cd desktop-audio-transcript
-source venv/bin/activate
-git pull
-pip install -r requirements.txt
-python app.py
-```
-
-```cmd
-# Windows
-cd desktop-audio-transcript
-venv\Scripts\activate
-git pull
-pip install -r requirements.txt
-python app.py
-```
-
-Si agregás o cambiás dependencias en el repo, `pip install -r requirements.txt` actualiza el entorno.
+- **"No se encontró Python"** → Instalá Python desde python.org y marcá "Add Python to PATH". Cerrá y volvé a abrir cmd.
+- **"ffmpeg no está en el PATH"** → Instalá ffmpeg y agregalo al PATH, o instalalo con Chocolatey: `choco install ffmpeg`.
+- **No se captura audio** → Ejecutá `python -m pyaudiowpatch` (con el venv activado: `venv\Scripts\activate`) para ver los dispositivos de audio; en la app se usa el dispositivo de salida por defecto como loopback.
