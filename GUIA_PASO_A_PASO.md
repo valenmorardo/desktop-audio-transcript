@@ -6,7 +6,7 @@ Esta guía es para usar la app **solo en Windows**. Flujo: clonar → ejecutar u
 
 ## Requisitos previos
 
-- **Python 3.10 o 3.11** instalado y en el PATH.  
+- **Python 3.10 o mayor** instalado y en el PATH.  
   Descarga: [python.org/downloads](https://www.python.org/downloads/). Al instalar, marcá **"Add Python to PATH"**.
 - **ffmpeg** en el PATH (lo usa faster-whisper).  
   Descarga: [ffmpeg.org/download.html](https://ffmpeg.org/download.html), o con Chocolatey: `choco install ffmpeg`.
